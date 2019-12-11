@@ -8,7 +8,7 @@ from signal_utils import get_channel_array
 if __name__ == '__main__':
     parser = get_arguments()
     parser.add_argument('--input_dir', help='input image dir', default='emg_data/old/')
-    parser.add_argument('--input_name', help='input image name', required=True)
+    parser.add_argument('--input_name', help='input file name', required=True)
     parser.add_argument('--row', help='row number of file', type=int, required=True)
     parser.add_argument('--mode', help='task to be done', default='train')
     parser.add_argument('--num_of_channels', help='number of channels', type=int, default=5)

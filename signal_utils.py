@@ -8,7 +8,7 @@ def get_channel_array(opt):
     multi_channel_spectral = []
 
     # parse signals
-    data = pd.read_csv('%s%s' % (opt.input_img, opt.input_name), nrows=opt.row+1)
+    data = pd.read_csv('%s%s' % (opt.input_dir, opt.input_name), nrows=opt.row+1)
     x = data.values[opt.row, 1:]
     channels = np.split(x, opt.num_of_channels)
 
