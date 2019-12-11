@@ -1,24 +1,34 @@
-from PIL import Image
 import matplotlib.pyplot as plt
 from scipy import signal
 
 import numpy as np
-import json
 
-with open('Input/Spectrograms/data.json') as f:
-    signal_info = json.load(f)
 
-sampling_freq = signal_info['sampling_freq']
+start_scale = 2
 
-signal_num = 3
-img = Image.open('Output/RandomSamples/spectrogram/gen_start_scale=0/' + str(signal_num) + '.png').convert('F')
-img_array = np.array(img)
+sampling_freq = 1024
+number_of_samples = 200
+number_of_channels = 5
 
-img_array = (img_array / 255.0) * signal_info['max_intensity']
-t, xrec = signal.istft(img_array, sampling_freq,
-                       nperseg=int(sampling_freq / 4),
-                       noverlap=int(sampling_freq / 4) - 2
-                       )
+num_of_sig = 3
 
-plt.plot(t, xrec)
-plt.savefig('Input/Spectrograms/reconstructed_signal_' + str(signal_num) + '.png')
+fig, ax = plt.subplots(num_of_sig, number_of_channels)
+
+for i, row in enumerate(ax):
+
+    npzfile = np.load('Output/RandomSamples/PSU_Data_200ms_part1/gen_start_scale=' + str(start_scale) + '/' + str(i) + '.npz')
+    key = sorted(npzfile.files)[0]
+    spectral_array = npzfile[key].transpose(2, 0, 1)
+
+    for j, col in enumerate(row):
+        img_array = np.array(spectral_array[j])
+
+        t, xrec = signal.istft(img_array, sampling_freq,
+                               nperseg=int(number_of_samples / 1),
+                               noverlap=int(number_of_samples / 1) - 1
+                               )
+
+        col.plot(t, xrec)
+
+plt.savefig('Output/GeneratedSignals/reconstructed_signals.png', dpi=300)
+

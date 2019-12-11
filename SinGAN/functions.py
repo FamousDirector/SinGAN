@@ -39,7 +39,7 @@ def norm(x):
 #    return out#.clamp(I2.min(), I2.max())
 
 def convert_image_np(inp):
-    if inp.shape[1]==3:
+    if inp.shape[1]>=3:
         inp = denorm(inp)
         inp = move_to_cpu(inp[-1,:,:,:])
         inp = inp.numpy().transpose((1,2,0))
@@ -169,7 +169,7 @@ def read_image_dir(dir,opt):
     return x
 
 def np2torch(x,opt):
-    if opt.nc_im == 3:
+    if opt.nc_im >= 3:
         x = x[:,:,:,None]
         x = x.transpose((3, 2, 0, 1))/255
     else:
@@ -227,7 +227,7 @@ def adjust_scales2image_SR(real_,opt):
     return real
 
 def creat_reals_pyramid(real,reals,opt):
-    real = real[:,0:3,:,:]
+    real = real[:,:,:,:]
     for i in range(0,opt.stop_scale+1,1):
         scale = math.pow(opt.scale_factor,opt.stop_scale-i)
         curr_real = imresize(real,scale,opt)
@@ -337,26 +337,3 @@ def quant2centers(paint, centers):
     x = x.type(torch.cuda.FloatTensor)
     x = x.view(paint.shape)
     return x
-
-    return paint
-
-
-def dilate_mask(mask,opt):
-    if opt.mode == "harmonization":
-        element = morphology.disk(radius=7)
-    if opt.mode == "editing":
-        element = morphology.disk(radius=20)
-    mask = torch2uint8(mask)
-    mask = mask[:,:,0]
-    mask = morphology.binary_dilation(mask,selem=element)
-    mask = filters.gaussian(mask, sigma=5)
-    nc_im = opt.nc_im
-    opt.nc_im = 1
-    mask = np2torch(mask,opt)
-    opt.nc_im = nc_im
-    mask = mask.expand(1, 3, mask.shape[2], mask.shape[3])
-    plt.imsave('%s/%s_mask_dilated.png' % (opt.ref_dir, opt.ref_name[:-4]), convert_image_np(mask), vmin=0,vmax=1)
-    mask = (mask-mask.min())/(mask.max()-mask.min())
-    return mask
-
-
