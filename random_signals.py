@@ -16,7 +16,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_of_channels', help='number of channels', type=int, default=5)
     parser.add_argument('--samp_freq', help='number of channels', type=int, default=1024)
     parser.add_argument('--mode', help='set generation mode', default='random_samples')
-    parser.add_argument('--row', help='row number of file', type=int, default=0)
+    parser.add_argument('--row', help='row number of file', type=int, required=True)
     opt = parser.parse_args()
     opt = functions.post_config(opt)
     Gs = []
