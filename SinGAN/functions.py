@@ -266,7 +266,7 @@ def generate_dir2save(opt):
     if (opt.mode == 'train'):
         dir2save = 'TrainedModels/%s_row%d/scale_factor=%f,alpha=%d' % (opt.input_name[:-4], opt.row, opt.scale_factor_init,opt.alpha)
     elif opt.mode == 'random_samples':
-        dir2save = '%s/RandomSamples/%s_row%d/gen_start_scale=%d' % (opt.out, opt.row, opt.input_name[:-4], opt.gen_start_scale)
+        dir2save = '%s/RandomSamples/%s_row%d/gen_start_scale=%d' % (opt.out, opt.input_name[:-4], opt.row, opt.gen_start_scale)
     elif opt.mode == 'random_samples_arbitrary_sizes':
         dir2save = '%s/RandomSamples_ArbitrerySizes/%s/scale_v=%f_scale_h=%f' % (opt.out,opt.input_name[:-4], opt.scale_v, opt.scale_h)
     return dir2save
