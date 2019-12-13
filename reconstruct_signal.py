@@ -4,7 +4,8 @@ from scipy import signal
 import numpy as np
 
 
-start_scale = 2
+row_index = 37
+start_scale = 0
 
 sampling_freq = 1024
 number_of_samples = 200
@@ -16,7 +17,9 @@ fig, ax = plt.subplots(num_of_sig, number_of_channels)
 
 for i, row in enumerate(ax):
 
-    npzfile = np.load('Output/RandomSamples/PSU_Data_200ms_part1/gen_start_scale=' + str(start_scale) + '/' + str(i) + '.npz')
+    npzfile = np.load('Output/RandomSamples/PSU_Data_200ms_part1_row' + str(row_index) +
+                      '/gen_start_scale=' + str(start_scale) +
+                      '/' + str(i) + '.npz')
     key = sorted(npzfile.files)[0]
     spectral_array = npzfile[key].transpose(2, 0, 1)
 
