@@ -1,22 +1,32 @@
-from config import get_arguments
+import os
+import shutil
+
 from SinGAN.manipulate import *
 from SinGAN.training import *
-from SinGAN.imresize import imresize
 import SinGAN.functions as functions
-from signal_utils import get_channel_array
+from signal_utils import get_channel_array, reconstruct_signals, plot_signals
 
 
 if __name__ == '__main__':
     parser = get_arguments()
+    # data params
     parser.add_argument('--input_dir', help='input image dir', default='emg_data/old/')
     parser.add_argument('--input_name', help='input image name', required=True)
-    # for random_samples:
-    parser.add_argument('--gen_start_scale', type=int, help='generation start scale', default=0)
+    parser.add_argument('--row', help='row number of file', type=int, required=True)
+
+    # signal params
     parser.add_argument('--num_samples', type=int, help='number of samples to generate', default=10)
     parser.add_argument('--num_of_channels', help='number of channels', type=int, default=5)
     parser.add_argument('--samp_freq', help='number of channels', type=int, default=1024)
+
+    # SinGAN parameters
+    parser.add_argument('--gen_start_scale', type=int, help='generation start scale', default=0)
     parser.add_argument('--mode', help='set generation mode', default='random_samples')
-    parser.add_argument('--row', help='row number of file', type=int, required=True)
+
+    # generation parameters
+    parser.add_argument('--keep_npz', action='store_true')
+    parser.add_argument('--plot_signals', action='store_true')
+
     opt = parser.parse_args()
     opt = functions.post_config(opt)
     Gs = []
@@ -45,8 +55,29 @@ if __name__ == '__main__':
         functions.adjust_scales2image(real, opt)
         Gs, Zs, reals, NoiseAmp = functions.load_trained_pyramid(opt)
         in_s = functions.generate_in2coarsest(reals,1,1,opt)
-        SinGAN_generate_signal(Gs, Zs, reals, NoiseAmp, opt, gen_start_scale=opt.gen_start_scale,
-                        num_samples=opt.num_samples)
+        SinGAN_generate_signal(Gs, Zs, reals, NoiseAmp, opt,
+                               gen_start_scale=opt.gen_start_scale,
+                               num_samples=opt.num_samples)
+
+        # reconstruct and save signals
+        reconstruct_signals(opt, dir2save)
+
+        # remove npz files
+        if not opt.keep_npz:
+            for filename in os.listdir(dir2save):
+                if filename.endswith(".npz"):
+                    file_path = os.path.join(dir2save, filename)
+                    try:
+                        if os.path.isfile(file_path) or os.path.islink(file_path):
+                            os.unlink(file_path)
+                        elif os.path.isdir(file_path):
+                            shutil.rmtree(file_path)
+                    except Exception as e:
+                        print('Failed to delete %s. Reason: %s' % (file_path, e))
+
+        if opt.plot_signals:
+            plot_signals(opt, dir2save)
+
 
 
 
