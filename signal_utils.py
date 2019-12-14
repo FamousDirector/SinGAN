@@ -48,19 +48,12 @@ def reconstruct_signals(opt, dir2save):
     """
     This function creates a csv file that contains the reconstructed temporal signals that were generated with SinGAN
     """
-    row_index = 37
-    start_scale = 0
-
-    directory = ('Output/RandomSamples/PSU_Data_200ms_part1_row' + str(row_index) +
-                 '/gen_start_scale=' + str(start_scale) +
-                 '/')
-
     signals = []
 
     for filename in os.listdir(dir2save):
         if filename.endswith(".npz"):
 
-            npzfile = np.load(os.path.join(directory, filename))
+            npzfile = np.load(os.path.join(dir2save, filename))
             key = sorted(npzfile.files)[0]
             spectral_array = npzfile[key].transpose(2, 0, 1)
 
