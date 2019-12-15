@@ -7,12 +7,19 @@ from signal_utils import get_channel_array
 
 if __name__ == '__main__':
     parser = get_arguments()
+
+    # data params
     parser.add_argument('--input_dir', help='input image dir', default='emg_data/old/')
-    parser.add_argument('--input_name', help='input file name', required=True)
+    parser.add_argument('--input_name', help='input image name', required=True)
     parser.add_argument('--row', help='row number of file', type=int, required=True)
-    parser.add_argument('--mode', help='task to be done', default='train')
+
+    # signal params
     parser.add_argument('--num_of_channels', help='number of channels', type=int, default=5)
     parser.add_argument('--samp_freq', help='number of channels', type=int, default=1024)
+
+    # SinGAN parameters
+    parser.add_argument('--mode', help='set generation mode', default='train')
+
     opt = parser.parse_args()
     opt = functions.post_config(opt)
     Gs = []
@@ -36,5 +43,9 @@ if __name__ == '__main__':
         real = functions.np2torch(x, opt)
 
         functions.adjust_scales2image(real, opt)
-        train_from_signal(opt, Gs, Zs, reals, NoiseAmp, real)
+        if opt.mode == 'animation_train':
+            opt.min_size = 20
+            train_from_signal(opt, Gs, Zs, reals, NoiseAmp, real)
+        else:  # opt.mode == train
+            train_from_signal(opt, Gs, Zs, reals, NoiseAmp, real)
 

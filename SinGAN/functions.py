@@ -268,7 +268,12 @@ def generate_dir2save(opt):
     elif opt.mode == 'random_samples':
         dir2save = '%s/RandomSamples/%s_row%d/gen_start_scale=%d' % (opt.out, opt.input_name[:-4], opt.row, opt.gen_start_scale)
     elif opt.mode == 'random_samples_arbitrary_sizes':
-        dir2save = '%s/RandomSamples_ArbitrerySizes/%s/scale_v=%f_scale_h=%f' % (opt.out,opt.input_name[:-4], opt.scale_v, opt.scale_h)
+        dir2save = '%s/RandomSamples_ArbitrarySizes/%s/scale_v=%f_scale_h=%f' % (opt.out,opt.input_name[:-4], opt.scale_v, opt.scale_h)
+    elif (opt.mode == 'animation_train'):
+        dir2save = 'TrainedModels/%s_row%d/scale_factor=%f_noise_padding' % (opt.input_name[:-4], opt.row, opt.scale_factor_init)
+    elif opt.mode == 'animation':
+        dir2save = '%s/Animation/%s_row%d/start_scale=%d/alpha=%f_beta=%f' % (opt.out, opt.input_name[:-4], opt.row,
+                                                                              opt.gen_start_scale, opt.animation_alpha, opt.animation_beta)
     return dir2save
 
 def post_config(opt):

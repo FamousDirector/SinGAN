@@ -63,8 +63,8 @@ def reconstruct_signals(opt, dir2save):
                 img_array = np.array(spectral_array[j])
 
                 _, xrec = signal.istft(img_array, opt.samp_freq,
-                                       nperseg=int(opt.num_samples / 1),
-                                       noverlap=int(opt.num_samples / 1) - 1
+                                       nperseg=int(opt.num_channel_samples / 1),
+                                       noverlap=int(opt.num_channel_samples / 1) - 1
                                        )
 
                 s = np.append(s, xrec)
