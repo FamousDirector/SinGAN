@@ -5,10 +5,14 @@ import pandas as pd
 import os
 import csv
 import matplotlib.pyplot as plt
+import pycwt
+import SinGAN.functions as functions
 
 
-def get_channel_array(opt):
+def get_multi_channel_spectral_array(opt):
     multi_channel_spectral = []
+    min_max_values = []
+    dir2save = functions.generate_dir2save(opt)  # for saving signal values
 
     # parse signals
     data = pd.read_csv('%s%s' % (opt.input_dir, opt.input_name), nrows=opt.row+1)
@@ -21,18 +25,29 @@ def get_channel_array(opt):
     # for each temporal channel
     for i, ch in enumerate(channels):
 
+        min_max_values.append([np.min(ch), np.max(ch)])
+
         # calculate spectrogram image
         signal_length = len(ch)
-        _, _, Zxx = signal.stft(ch, opt.samp_freq,
-                                nperseg=int(signal_length / 1),
-                                noverlap=int(signal_length / 1) - 1
-                                )
+        if opt.spectral_type == "stft":
+            _, _, spectral = signal.stft(ch, opt.samp_freq,
+                                         nperseg=int(signal_length / 1),
+                                         noverlap=int(signal_length / 1) - 1
+                                         )
+        elif opt.spectral_type == "cwt":
+            spectral, sj, _, _, _, _ = pycwt.cwt(ch, 1 / opt.samp_freq,
+                                                 dj=1/16,
+                                                 wavelet=pycwt.Morlet(6)
+                                                 )
+            np.savetxt('%s/sj_values.csv' % dir2save, sj, delimiter=',')
+        else:
+            raise Exception('Spectral type %s is not supported' % opt.spectral_type)
 
         # generate spectrogram image
-        min_intensity = np.min(Zxx.real)
-        max_intensity = np.max(Zxx.real)
+        min_intensity = np.min(spectral.real)
+        max_intensity = np.max(spectral.real)
 
-        img_array = ((Zxx.real / max_intensity) * 255)
+        img_array = ((spectral.real - min_intensity) / (max_intensity - min_intensity) * 255)
 
         img = Image.fromarray(img_array).convert('L')
         img_array = np.array(img)
@@ -40,6 +55,9 @@ def get_channel_array(opt):
 
     multi_channel_spectral = np.array(multi_channel_spectral)  # convert to np array
     multi_channel_spectral = multi_channel_spectral.transpose((1, 2, 0))  # convert to NHWC for conformity
+
+    np.savetxt('%s/min_max_values.csv' % dir2save,
+               np.array(min_max_values), delimiter=',')  # save min/max values for signals
 
     return multi_channel_spectral
 
@@ -49,6 +67,18 @@ def reconstruct_signals(opt, dir2save):
     This function creates a csv file that contains the reconstructed temporal signals that were generated with SinGAN
     """
     signals = []
+
+    # load directory path of trained signal information
+    if opt.mode == 'animation':
+        opt.mode = 'animation_train'
+        d = functions.generate_dir2save(opt)
+        opt.mode = 'animation'
+    else:
+        opt.mode = 'train'
+        d = functions.generate_dir2save(opt)
+        opt.mode = 'random_samples'
+
+    min_max_values = np.loadtxt('%s/min_max_values.csv' % d, delimiter=',')
 
     for filename in os.listdir(dir2save):
         if filename.endswith(".npz"):
@@ -62,12 +92,25 @@ def reconstruct_signals(opt, dir2save):
             for j in range(opt.num_of_channels):
                 img_array = np.array(spectral_array[j])
 
-                _, xrec = signal.istft(img_array, opt.samp_freq,
-                                       nperseg=int(opt.num_channel_samples / 1),
-                                       noverlap=int(opt.num_channel_samples / 1) - 1
-                                       )
+                if opt.spectral_type == "stft":
+                    _, xrec = signal.istft(img_array, opt.samp_freq,
+                                           nperseg=int(opt.num_channel_samples / 1),
+                                           noverlap=int(opt.num_channel_samples / 1) - 1
+                                           )
 
-                s = np.append(s, xrec)
+                elif opt.spectral_type == "cwt":
+                    sj = np.loadtxt('%s/sj_values.csv' % d, delimiter=',')
+                    xrec = pycwt.icwt(img_array, sj, 1 / opt.samp_freq,
+                                      dj=1/16,
+                                      wavelet=pycwt.Morlet(6)
+                                      )
+                    xrec = xrec.real
+                else:
+                    raise Exception('Spectral type %s is not supported' % opt.spectral_type)
+
+                x_norm = ((xrec - np.min(xrec)) / (np.max(xrec) - np.min(xrec)))
+                x_renorm = (x_norm * (min_max_values[j][1] - min_max_values[j][0])) + min_max_values[j][0]
+                s = np.append(s, x_renorm)
 
             signals.append(s)
 

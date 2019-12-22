@@ -2,7 +2,7 @@ from config import get_arguments
 from SinGAN.manipulate import *
 from SinGAN.training import *
 import SinGAN.functions as functions
-from signal_utils import get_channel_array
+from signal_utils import get_multi_channel_spectral_array
 
 
 if __name__ == '__main__':
@@ -16,6 +16,7 @@ if __name__ == '__main__':
     # signal params
     parser.add_argument('--num_of_channels', help='number of channels', type=int, default=5)
     parser.add_argument('--samp_freq', help='number of channels', type=int, default=1024)
+    parser.add_argument('--spectral_type', help='number of channels', default='stft')
 
     # SinGAN parameters
     parser.add_argument('--mode', help='set generation mode', default='train')
@@ -38,7 +39,7 @@ if __name__ == '__main__':
 
         opt.nc_im = opt.num_of_channels
         opt.nc_z = opt.num_of_channels
-        x = get_channel_array(opt)
+        x = get_multi_channel_spectral_array(opt)
 
         real = functions.np2torch(x, opt)
 
