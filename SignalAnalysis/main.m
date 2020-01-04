@@ -71,36 +71,58 @@ for i = 1:length(real_classes)
     end
 end
 
+[~,     sim_score] = pca(sim_features);
+
+%% calculate metrics
+real_CHi     = evalclusters(real_features, [real_classes; real_classes; real_classes],'CalinskiHarabasz');
+sim_CHi      = evalclusters(sim_features,  sim_classes','CalinskiHarabasz');
+combined_CHi = evalclusters([real_features;sim_features],  [real_classes; real_classes; real_classes; sim_classes'],'CalinskiHarabasz');
+
+fprintf('CHi - Real: %.2f, Simulated: %.2f, Combined: %.2f\n', real_CHi.CriterionValues, sim_CHi.CriterionValues, combined_CHi.CriterionValues)
 
 real_DBi     = evalclusters(real_features, [real_classes; real_classes; real_classes],'DaviesBouldin');
 sim_DBi      = evalclusters(sim_features,  sim_classes','DaviesBouldin');
 combined_DBi = evalclusters([real_features;sim_features],  [real_classes; real_classes; real_classes; sim_classes'],'DaviesBouldin');
-% we want these to be close
 
-%% produce plot for simuluated data
+fprintf('DBi - Real: %.2f, Simulated: %.2f, Combined: %.2f\n', real_DBi.CriterionValues, sim_DBi.CriterionValues, combined_DBi.CriterionValues)
 
-[~,     sim_score] = pca(sim_features);
-gscatter(sim_score(:,1),sim_score(:,2),sim_classes);
-xlabel('PC1')
-ylabel('PC2')
-title(['Sim Data PCA Feature Space, DBi: ' num2str(sim_DBi.CriterionValues)])
+real_Si     = evalclusters(real_features, [real_classes; real_classes; real_classes],'silhouette');
+sim_Si      = evalclusters(sim_features,  sim_classes','silhouette');
+combined_Si = evalclusters([real_features;sim_features],  [real_classes; real_classes; real_classes; sim_classes'],'silhouette');
 
+fprintf('Si - Real: %.2f, Simulated: %.2f, Combined: %.2f\n', real_Si.CriterionValues, sim_Si.CriterionValues, combined_Si.CriterionValues)
 
 %% produce plot for real data
 
 figure()
 hold on 
 unique_classes = unique(real_classes);
+colors = hsv(size(unique_classes,1));
 for i = 1:length(unique_classes)
     class_mask = real_classes == unique_classes(i);
     class_mask = [class_mask class_mask class_mask];
-    plot3(real_score(class_mask,1), real_score(class_mask,2), real_score(class_mask,3),'.','MarkerSize',20)
+    plot3(real_score(class_mask,1), real_score(class_mask,2), real_score(class_mask,3),...
+            '.','MarkerSize',20,'Color',colors(i,:))
 end
-legend()
 xlabel('PC1')
 ylabel('PC2')
-title(['Real Data PCA Feature Space, DBi: ' num2str(real_DBi.CriterionValues)])
+zlabel('PC3')
+title('Real Data PCA Feature Space')
 
+%% produce plot for simuluated data
+figure()
+hold on 
+unique_classes = unique(real_classes);
+colors = hsv(size(unique_classes,1));
+for i = 1:length(unique_classes)
+    s_class_mask = sim_classes == unique_classes(i);
+    plot3(sim_score(s_class_mask,1), sim_score(s_class_mask,2), sim_score(s_class_mask,3),...
+            '.','MarkerSize',20,'Color',colors(i,:))
+end
+xlabel('PC1')
+ylabel('PC2')
+zlabel('PC3')
+title('Sim Data PCA Feature Space')
 
 %% Produce plot of combined data
 
@@ -118,16 +140,20 @@ for i = 1:length(unique_classes)
     
     s_class_mask = sim_classes == unique_classes(i);
     
-    plot(real_score(class_mask,1), real_score(class_mask,2),'o',...
-        p_sim_data(s_class_mask,1), p_sim_data(s_class_mask,2),'+','Color',colors(i,:))
+    plot3(real_score(class_mask,1), real_score(class_mask,2), real_score(class_mask,3),'o',...
+        p_sim_data(s_class_mask,1), p_sim_data(s_class_mask,2), p_sim_data(s_class_mask,3),'+','Color',colors(i,:))
     
 end
-
+xlabel('PC1')
+ylabel('PC2')
+zlabel('PC3')
 
 subplot(1,2,2)
 
-plot(real_score(:,1), real_score(:,2),'+b',p_sim_data(:,1),p_sim_data(:,2),'or')
+plot3(real_score(:,1), real_score(:,2), real_score(:,3),'+b',...
+    p_sim_data(:,1),p_sim_data(:,2),p_sim_data(:,3),'or')
 xlabel('PC1')
 ylabel('PC2')
-title(['Combined PCA Feature Space, DBi: ' num2str(combined_DBi.CriterionValues)])
+zlabel('PC3')
+sgtitle('Combined PCA Feature Space')
 
