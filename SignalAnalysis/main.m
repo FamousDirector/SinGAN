@@ -4,7 +4,7 @@ close all
 
 %%
 
-scale_num = 1;
+scale_num = 2;
 
 % import all the simulated data
 
@@ -110,7 +110,7 @@ unique_class = unique(real_classes);
 
 p_sim_data = (sim_features-mu) * coeff; % project simulated data w/
                                    % real data PCA projection
-colors = {'r','k','c','b','m','g','y','w','r'};
+colors = hsv(size(unique_classes,1));
 hold on
 for i = 1:length(unique_classes)
     class_mask = real_classes == unique_classes(i);
@@ -118,16 +118,16 @@ for i = 1:length(unique_classes)
     
     s_class_mask = sim_classes == unique_classes(i);
     
-    plot(real_score(class_mask,1), real_score(class_mask,2),[colors{i} 'o'],...
-        p_sim_data(s_class_mask,1), p_sim_data(s_class_mask,2), [colors{i} '.'])
+    plot(real_score(class_mask,1), real_score(class_mask,2),'o',...
+        p_sim_data(s_class_mask,1), p_sim_data(s_class_mask,2),'+','Color',colors(i,:))
     
 end
 
 
 subplot(1,2,2)
 
-plot(real_score(:,1), real_score(:,2),[colors{1} '+'],p_sim_data(:,1),p_sim_data(:,2),[colors{2} '.'])
+plot(real_score(:,1), real_score(:,2),'+b',p_sim_data(:,1),p_sim_data(:,2),'or')
 xlabel('PC1')
 ylabel('PC2')
-title(['Combined PCA Feature Space, DBi: ' num2str(combined_DBi.CriterionValues) 'o'])
+title(['Combined PCA Feature Space, DBi: ' num2str(combined_DBi.CriterionValues)])
 
