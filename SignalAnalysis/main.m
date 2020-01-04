@@ -8,7 +8,7 @@ scale_num = 1;
 
 % import all the simulated data
 
-output_dir = dir([pwd '/Output/RandomSamples/PSU*']);
+output_dir = dir([pwd '/../Output/RandomSamples/PSU_Data_200ms_part1*']);
 
 row_nums = [];
 sim_data = [];
@@ -34,7 +34,7 @@ row_nums = row_nums + 1;
 
 %% get original samples
 
-raw_data = csvread([pwd '/emg_data/old/PSU_Data_200ms_part1.csv']);
+raw_data = csvread([pwd '/../emg_data/old/PSU_Data_200ms_part1.csv']);
 real_classes = raw_data(row_nums,1);
 real_data = raw_data(row_nums,2:end);
 
@@ -83,7 +83,7 @@ combined_DBi = evalclusters([real_features;sim_features],  [real_classes; real_c
 gscatter(sim_score(:,1),sim_score(:,2),sim_classes);
 xlabel('PC1')
 ylabel('PC2')
-title(['Sim Data PCA Feature Space, DBi: ' num2str(sim_DBi.CriterionValues) '.'])
+title(['Sim Data PCA Feature Space, DBi: ' num2str(sim_DBi.CriterionValues)])
 
 
 %% produce plot for real data
@@ -99,7 +99,7 @@ end
 legend()
 xlabel('PC1')
 ylabel('PC2')
-title(['Real Data PCA Feature Space, DBi: ' num2str(real_DBi.CriterionValues) '.'])
+title(['Real Data PCA Feature Space, DBi: ' num2str(real_DBi.CriterionValues)])
 
 
 %% Produce plot of combined data
