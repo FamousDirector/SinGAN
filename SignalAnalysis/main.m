@@ -4,11 +4,11 @@ close all
 
 %%
 
-scale_num = 2;
+scale_num = 1;
 
 % import all the simulated data
 
-output_dir = dir([pwd '/../Output/RandomSamples/PSU_Data_200ms_part1*']);
+output_dir = dir([pwd '/../Output/RandomSamples/PSU_Data_200ms_part2*']);
 
 row_nums = [];
 sim_data = [];
@@ -29,12 +29,12 @@ for i = 1:size(sim_data,1)
     r_sim_data = [r_sim_data; reshape(sim_data(i,:), [],5)];
 end
 
-row_nums = row_nums + 1;
+row_nums = row_nums + 2;
 
 
 %% get original samples
 
-raw_data = csvread([pwd '/../emg_data/old/PSU_Data_200ms_part1.csv']);
+raw_data = csvread([pwd '/../emg_data/old/PSU_Data_200ms_part2.csv']);
 real_classes = raw_data(row_nums,1);
 real_data = raw_data(row_nums,2:end);
 
@@ -71,7 +71,7 @@ for i = 1:length(real_classes)
     end
 end
 
-[~,     sim_score] = pca(sim_features);
+[~,     sim_score] = pca((sim_features-mu) * coeff);
 
 %% calculate metrics
 real_CHi     = evalclusters(real_features, [real_classes; real_classes; real_classes],'CalinskiHarabasz');
