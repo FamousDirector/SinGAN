@@ -43,7 +43,7 @@ for i = 1:(num_of_trials*num_of_subjects)
         train_data = [train_data; reshape(raw_data(r,2:end),[],num_of_channels)];
         train_classes = [train_classes; cl];
         
-        tmp = csvread(['../Output/RandomSamples/PSU_Data_200ms_part2_row' num2str(r-2) '/cwt/gen_start_scale=' num2str(scale_num) '/signals.csv']);
+        tmp = csvread(['../Output/RandomSamples/PSU_Data_200ms_part2_row' num2str(r-1) '/cwt/gen_start_scale=' num2str(scale_num) '/signals.csv']);
         sim_data = [sim_data; reshape(tmp,[],num_of_channels)];
             
         for a = 1:num_generated

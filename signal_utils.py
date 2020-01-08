@@ -15,7 +15,7 @@ def get_multi_channel_spectral_array(opt):
     dir2save = functions.generate_dir2save(opt)  # for saving signal values
 
     # parse signals
-    data = pd.read_csv('%s%s' % (opt.input_dir, opt.input_name), nrows=opt.row+1)
+    data = pd.read_csv('%s%s' % (opt.input_dir, opt.input_name), nrows=opt.row+1, header=None)
     x = data.values[opt.row, 1:]
     channels = np.split(x, opt.num_of_channels)
 
