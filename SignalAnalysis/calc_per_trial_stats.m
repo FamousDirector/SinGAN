@@ -4,7 +4,7 @@ close all
 
 %% load real raw data
 
-raw_data = csvread([pwd '/../emg_data/old/PSU_Data_200ms_part2.csv']);
+raw_data = csvread([pwd '/../data/old/PSU_Data_200ms_part2.csv']);
 
 %% parameters
 scale_num = 2;
@@ -43,7 +43,7 @@ for i = 1:(num_of_trials*num_of_subjects)
         train_data = [train_data; reshape(raw_data(r,2:end),[],num_of_channels)];
         train_classes = [train_classes; cl];
         
-        tmp = csvread(['../Output/RandomSamples/PSU_Data_200ms_part2_row' num2str(r-1) '/cwt/gen_start_scale=' num2str(scale_num) '/signals.csv']);
+        tmp = csvread(['../Output/RandomSamples/PSU_Data_200ms_part2_row' num2str(r-2) '/cwt/gen_start_scale=' num2str(scale_num) '/signals.csv']);
         sim_data = [sim_data; reshape(tmp,[],num_of_channels)];
             
         for a = 1:num_generated
@@ -102,6 +102,27 @@ for i = 1:(num_of_trials*num_of_subjects)
     [~, sim_score] = pca((sim_features-mu) * coeff);
 
     % produce plot for training data
+    
+    x_min = min([min(train_score(:,1)),...
+            min(real_score(:,1)),...
+            min(sim_score(:,1))]);
+    x_max = max([max(train_score(:,1)),...
+            max(real_score(:,1)),...
+            max(sim_score(:,1))]);
+
+    y_min = min([min(train_score(:,2)),...
+            min(real_score(:,2)),...
+            min(sim_score(:,2))]);
+    y_max = max([max(train_score(:,2)),...
+            max(real_score(:,2)),...
+            max(sim_score(:,2))]);
+
+    z_min = min([min(train_score(:,3)),...
+            min(real_score(:,3)),...
+            min(sim_score(:,3))]);
+    z_max = max([max(train_score(:,3)),...
+            max(real_score(:,3)),...
+            max(sim_score(:,3))]);
 
     figure()
     hold on     
@@ -115,6 +136,10 @@ for i = 1:(num_of_trials*num_of_subjects)
     ylabel('PC2')
     zlabel('PC3')
     view(3)
+    grid on
+    xlim([x_min, x_max])
+    ylim([y_min, y_max])
+    zlim([z_min, z_max])
 
     % produce plot for real data
 
@@ -130,6 +155,10 @@ for i = 1:(num_of_trials*num_of_subjects)
     ylabel('PC2')
     zlabel('PC3')
     view(3)
+    grid on
+    xlim([x_min, x_max])
+    ylim([y_min, y_max])
+    zlim([z_min, z_max])
 
     % produce plot for simuluated data
     figure()
@@ -144,6 +173,10 @@ for i = 1:(num_of_trials*num_of_subjects)
     ylabel('PC2')
     zlabel('PC3')
     view(3)
+    grid on
+    xlim([x_min, x_max])
+    ylim([y_min, y_max])
+    zlim([z_min, z_max])
 
 end    
 
