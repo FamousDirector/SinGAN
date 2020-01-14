@@ -16,7 +16,7 @@ def get_multi_channel_spectral_array(opt):
 
     # parse signals
     data = pd.read_csv('%s%s' % (opt.input_dir, opt.input_name), nrows=opt.row+1, header=None)
-    x = data.values[opt.row, 1:]
+    x = data.values[opt.row, opt.data_col_start_index:]
     channels = np.split(x, opt.num_of_channels)
 
     class_label = data.values[opt.row, 0]

@@ -9,14 +9,16 @@ if __name__ == '__main__':
     parser = get_arguments()
 
     # data params
-    parser.add_argument('--input_dir', help='input image dir', default='emg_data/old/')
+    parser.add_argument('--input_dir', help='input image dir', default='data/')
     parser.add_argument('--input_name', help='input image name', required=True)
     parser.add_argument('--row', help='row number of file', type=int, required=True)
 
     # signal params
-    parser.add_argument('--num_of_channels', help='number of channels', type=int, default=5)
-    parser.add_argument('--samp_freq', help='number of channels', type=int, default=1024)
-    parser.add_argument('--spectral_type', help='number of channels', default='stft')
+    parser.add_argument('--data_col_start_index',
+                        help='number of columns in dataset that are not part of the emg signal', type=int, default=3)
+    parser.add_argument('--num_of_channels', help='number of channels', type=int, default=8)
+    parser.add_argument('--samp_freq', help='number of channels', type=int, default=1000)
+    parser.add_argument('--spectral_type', help='number of channels', default='cwt')
 
     # SinGAN parameters
     parser.add_argument('--mode', help='set generation mode', default='train')
