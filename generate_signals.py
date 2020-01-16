@@ -20,8 +20,9 @@ if __name__ == '__main__':
     parser.add_argument('--num_samples', type=int, help='number of samples to generate', default=10)
     parser.add_argument('--num_channel_samples', type=int, help='number of samples per channel', default=200)
     parser.add_argument('--num_of_channels', help='number of channels', type=int, default=8)
+    parser.add_argument('--channel_skip_count', help='fraction of channels to use', type=int, default=1)
     parser.add_argument('--samp_freq', help='number of channels', type=int, default=1000)
-    parser.add_argument('--spectral_type', help='number of channels', default='cwt')
+    parser.add_argument('--spectral_type', help='number of channels', default='stft')
 
     # SinGAN parameters
     parser.add_argument('--gen_start_scale', type=int, help='generation start scale', default=0)
@@ -53,8 +54,8 @@ if __name__ == '__main__':
         except OSError:
             pass
 
-        opt.nc_im = opt.num_of_channels
-        opt.nc_z = opt.num_of_channels
+        opt.nc_im = opt.num_of_channels//opt.channel_skip_count
+        opt.nc_z = opt.num_of_channels//opt.channel_skip_count
         x = get_multi_channel_spectral_array(opt)
 
         real = functions.np2torch(x, opt)

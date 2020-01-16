@@ -25,6 +25,9 @@ def get_multi_channel_spectral_array(opt):
     # for each temporal channel
     for i, ch in enumerate(channels):
 
+        if i % opt.channel_skip_count:
+            continue
+
         min_max_values.append([np.min(ch), np.max(ch)])
 
         # calculate spectrogram image
@@ -89,7 +92,7 @@ def reconstruct_signals(opt, dir2save):
 
             s = np.array([])
 
-            for j in range(opt.num_of_channels):
+            for j in range(spectral_array.shape[0]):
                 img_array = np.array(spectral_array[j])
 
                 if opt.spectral_type == "stft":
