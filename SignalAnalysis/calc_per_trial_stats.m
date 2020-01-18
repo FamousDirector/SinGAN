@@ -13,7 +13,7 @@ num_generated = 1000;
 num_of_channels = 8;
 num_of_classes = 7;
 num_of_trials  = 4;
-num_of_subjects  = 1;
+num_of_subjects  = 5;
 num_of_windows = 56;
 chosen_window = 28;
 start_offset = 0;
@@ -28,7 +28,9 @@ for i = 1:(num_of_subjects)
     
         % prepare data
 
-        training_row = (i-1)*(j-1)*num_of_classes*num_of_windows + start_offset + chosen_window;
+        training_row = (i-1)*num_of_classes*num_of_windows*num_of_trials +...
+                    (j-1)*num_of_windows...
+                    + start_offset + chosen_window;
 
         train_data = [];
         real_data = [];
@@ -93,93 +95,93 @@ for i = 1:(num_of_subjects)
 
 
         % display metrics
-        fprintf('Loop %.i\n', i)
+        fprintf('Subject %.i, Trial %.i\n', i, j)
         fprintf('%.2f\n%.2f\n%.2f\n', real_CHi.CriterionValues, sim_CHi.CriterionValues, combined_CHi.CriterionValues)
         fprintf('%.2f\n%.2f\n%.2f\n', real_DBi.CriterionValues, sim_DBi.CriterionValues, combined_DBi.CriterionValues)
         fprintf('%.2f\n%.2f\n%.2f\n', real_Si.CriterionValues, sim_Si.CriterionValues, combined_Si.CriterionValues)
 
-        % Project Features
-
-        [coeff, real_score,~,~,~,mu] = pca(real_features);
-        [~, train_score] = pca((train_features-mu) * coeff);
-        [~, sim_score] = pca((sim_features-mu) * coeff);
-
-        % calculatet axis limits
-        
-        x_min = min([min(train_score(:,1)),...
-                min(real_score(:,1)),...
-                min(sim_score(:,1))]);
-        x_max = max([max(train_score(:,1)),...
-                max(real_score(:,1)),...
-                max(sim_score(:,1))]);
-
-        y_min = min([min(train_score(:,2)),...
-                min(real_score(:,2)),...
-                min(sim_score(:,2))]);
-        y_max = max([max(train_score(:,2)),...
-                max(real_score(:,2)),...
-                max(sim_score(:,2))]);
-
-        z_min = min([min(train_score(:,3)),...
-                min(real_score(:,3)),...
-                min(sim_score(:,3))]);
-        z_max = max([max(train_score(:,3)),...
-                max(real_score(:,3)),...
-                max(sim_score(:,3))]);
-
-        % produce cluster plot for training data
-            
-        figure()
-        hold on     
-        colors = hsv(size(unique_classes,1));
-        for i = 1:length(unique_classes)
-            class_mask = train_classes == unique_classes(i);
-            plot3(train_score(class_mask,1), train_score(class_mask,2), train_score(class_mask,3),...
-                    '.','MarkerSize',25,'Color',colors(i,:))
-        end
-        xlabel('PC1')
-        ylabel('PC2')
-        zlabel('PC3')
-        view(3)
-        grid on
-        xlim([x_min, x_max])
-        ylim([y_min, y_max])
-        zlim([z_min, z_max])
-
-        % produce cluster plot for real data
-
-        figure()
-        hold on 
-        for i = 1:length(unique_classes)
-            class_mask = real_classes == unique_classes(i);
-            plot3(real_score(class_mask,1), real_score(class_mask,2), real_score(class_mask,3),...
-                    '.','MarkerSize',10,'Color',colors(i,:))
-        end
-        xlabel('PC1')
-        ylabel('PC2')
-        zlabel('PC3')
-        view(3)
-        grid on
-        xlim([x_min, x_max])
-        ylim([y_min, y_max])
-        zlim([z_min, z_max])
-
-        % produce plot cluster for simuluated data
-        figure()
-        hold on 
-        for i = 1:length(unique_classes)
-            s_class_mask = sim_classes == unique_classes(i);
-            plot3(sim_score(s_class_mask,1), sim_score(s_class_mask,2), sim_score(s_class_mask,3),...
-                    '.','MarkerSize',10,'Color',colors(i,:))
-        end
-        xlabel('PC1')
-        ylabel('PC2')
-        zlabel('PC3')
-        view(3)
-        grid on
-        xlim([x_min, x_max])
-        ylim([y_min, y_max])
-        zlim([z_min, z_max])
+%         % Project Features
+% 
+%         [coeff, real_score,~,~,~,mu] = pca(real_features);
+%         [~, train_score] = pca((train_features-mu) * coeff);
+%         [~, sim_score] = pca((sim_features-mu) * coeff);
+% 
+%         % calculatet axis limits
+%         
+%         x_min = min([min(train_score(:,1)),...
+%                 min(real_score(:,1)),...
+%                 min(sim_score(:,1))]);
+%         x_max = max([max(train_score(:,1)),...
+%                 max(real_score(:,1)),...
+%                 max(sim_score(:,1))]);
+% 
+%         y_min = min([min(train_score(:,2)),...
+%                 min(real_score(:,2)),...
+%                 min(sim_score(:,2))]);
+%         y_max = max([max(train_score(:,2)),...
+%                 max(real_score(:,2)),...
+%                 max(sim_score(:,2))]);
+% 
+%         z_min = min([min(train_score(:,3)),...
+%                 min(real_score(:,3)),...
+%                 min(sim_score(:,3))]);
+%         z_max = max([max(train_score(:,3)),...
+%                 max(real_score(:,3)),...
+%                 max(sim_score(:,3))]);
+% 
+%         % produce cluster plot for training data
+%             
+%         figure()
+%         hold on     
+%         colors = hsv(size(unique_classes,1));
+%         for i = 1:length(unique_classes)
+%             class_mask = train_classes == unique_classes(i);
+%             plot3(train_score(class_mask,1), train_score(class_mask,2), train_score(class_mask,3),...
+%                     '.','MarkerSize',25,'Color',colors(i,:))
+%         end
+%         xlabel('PC1')
+%         ylabel('PC2')
+%         zlabel('PC3')
+%         view(3)
+%         grid on
+%         xlim([x_min, x_max])
+%         ylim([y_min, y_max])
+%         zlim([z_min, z_max])
+% 
+%         % produce cluster plot for real data
+% 
+%         figure()
+%         hold on 
+%         for i = 1:length(unique_classes)
+%             class_mask = real_classes == unique_classes(i);
+%             plot3(real_score(class_mask,1), real_score(class_mask,2), real_score(class_mask,3),...
+%                     '.','MarkerSize',10,'Color',colors(i,:))
+%         end
+%         xlabel('PC1')
+%         ylabel('PC2')
+%         zlabel('PC3')
+%         view(3)
+%         grid on
+%         xlim([x_min, x_max])
+%         ylim([y_min, y_max])
+%         zlim([z_min, z_max])
+% 
+%         % produce plot cluster for simuluated data
+%         figure()
+%         hold on 
+%         for i = 1:length(unique_classes)
+%             s_class_mask = sim_classes == unique_classes(i);
+%             plot3(sim_score(s_class_mask,1), sim_score(s_class_mask,2), sim_score(s_class_mask,3),...
+%                     '.','MarkerSize',10,'Color',colors(i,:))
+%         end
+%         xlabel('PC1')
+%         ylabel('PC2')
+%         zlabel('PC3')
+%         view(3)
+%         grid on
+%         xlim([x_min, x_max])
+%         ylim([y_min, y_max])
+%         zlim([z_min, z_max])
         
     end
 end    
