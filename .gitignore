@@ -4,3 +4,5 @@ TrainedModels/
 __pycache__/
 .idea
 *.csv
+*.eps
+*.fig
