@@ -39,8 +39,8 @@ def get_multi_channel_spectral_array(opt):
                                          )
         elif opt.spectral_type == "cwt":
             spectral, sj, _, _, _, _ = pycwt.cwt(ch, 1 / opt.samp_freq,
-                                                 dj=1/16,
-                                                 wavelet=pycwt.Morlet(6)
+                                                 dj=1/32,
+                                                 wavelet=pycwt.Morlet(100)
                                                  )
             np.savetxt('%s/sj_values.csv' % dir2save, sj, delimiter=',')
         else:
@@ -104,8 +104,8 @@ def reconstruct_signals(opt, dir2save):
                 elif opt.spectral_type == "cwt":
                     sj = np.loadtxt('%s/sj_values.csv' % d, delimiter=',')
                     xrec = pycwt.icwt(img_array, sj, 1 / opt.samp_freq,
-                                      dj=1/16,
-                                      wavelet=pycwt.Morlet(6)
+                                      dj=1/32,
+                                      wavelet=pycwt.Morlet(100)
                                       )
                     xrec = xrec.real
                 else:
