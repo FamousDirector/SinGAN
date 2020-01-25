@@ -68,9 +68,6 @@ def train_from_signal(opt,Gs,Zs,reals,NoiseAmp,real_):
     while scale_num<opt.stop_scale+1:
         opt.nfc = min(opt.nfc_init * pow(2, math.floor(scale_num / 4)), 128)
         opt.min_nfc = min(opt.min_nfc_init * pow(2, math.floor(scale_num / 4)), 128)
-        if opt.fast_training:
-            if (scale_num > 0) & (scale_num % 4==0):
-                opt.niter = opt.niter//2
 
         '''
         if (scale_num == opt.stop_scale):

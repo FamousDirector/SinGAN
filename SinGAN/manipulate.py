@@ -167,22 +167,22 @@ def SinGAN_generate_signal(Gs,Zs,reals,NoiseAmp,opt,in_s=None,scale_v=1,scale_h=
             images_prev = images_cur
             images_cur = []
             if count == 0:
-                z_rand = functions.generate_noise([1, nzx, nzy])
+                z_rand = functions.generate_noise([1, nzx, nzy], device=opt.device)
                 z_rand = z_rand.expand(1, opt.nc_z, Z_opt.shape[2], Z_opt.shape[3])
                 z_prev1 = 0.95 * Z_opt + 0.05 * z_rand
                 z_prev2 = Z_opt
             else:
-                z_prev1 = 0.95 * Z_opt + 0.05 * functions.generate_noise([opt.nc_z, nzx, nzy])
+                z_prev1 = 0.95 * Z_opt + 0.05 * functions.generate_noise([opt.nc_z, nzx, nzy], device=opt.device)
                 z_prev2 = Z_opt
 
             for i in range(0, num_samples, 1):
                 if count == 0:
-                    z_rand = functions.generate_noise([1, nzx, nzy])
+                    z_rand = functions.generate_noise([1, nzx, nzy], device=opt.device)
                     z_rand = z_rand.expand(1, opt.nc_z, Z_opt.shape[2], Z_opt.shape[3])
                     diff_curr = beta * (z_prev1 - z_prev2) + (1 - beta) * z_rand
                 else:
                     diff_curr = beta * (z_prev1 - z_prev2) + (1 - beta) * (
-                        functions.generate_noise([opt.nc_z, nzx, nzy]))
+                        functions.generate_noise([opt.nc_z, nzx, nzy], device=opt.device))
 
                 z_curr = alpha * Z_opt + (1 - alpha) * (z_prev1 + diff_curr)
                 z_prev2 = z_prev1
@@ -235,11 +235,11 @@ def SinGAN_generate_signal(Gs,Zs,reals,NoiseAmp,opt,in_s=None,scale_v=1,scale_h=
 
             for i in range(0,num_samples,1):
                 if n == 0:
-                    z_curr = functions.generate_noise([1,nzx,nzy])
+                    z_curr = functions.generate_noise([1,nzx,nzy], device=opt.device)
                     z_curr = z_curr.expand(1,opt.nc_z,z_curr.shape[2],z_curr.shape[3])
                     z_curr = m(z_curr)
                 else:
-                    z_curr = functions.generate_noise([opt.nc_z,nzx,nzy])
+                    z_curr = functions.generate_noise([opt.nc_z,nzx,nzy], device=opt.device)
                     z_curr = m(z_curr)
 
                 if images_prev == []:
