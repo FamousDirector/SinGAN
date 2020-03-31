@@ -33,12 +33,12 @@ def get_multi_channel_spectral_array(opt):
         # calculate spectrogram image
         signal_length = len(ch)
         if opt.spectral_type == "stft":
-            _, _, spectral = signal.stft(ch, opt.samp_freq,
+            _, _, spectral = signal.stft(ch, opt.sample_freq,
                                          nperseg=int(signal_length / 1),
                                          noverlap=int(signal_length / 1) - 1
                                          )
         elif opt.spectral_type == "cwt":
-            spectral, sj, _, _, _, _ = pycwt.cwt(ch, 1 / opt.samp_freq,
+            spectral, sj, _, _, _, _ = pycwt.cwt(ch, 1 / opt.sample_freq,
                                                  dj=1/32,
                                                  wavelet=pycwt.Morlet(100)
                                                  )
@@ -96,14 +96,14 @@ def reconstruct_signals(opt, dir2save):
                 img_array = np.array(spectral_array[j])
 
                 if opt.spectral_type == "stft":
-                    _, xrec = signal.istft(img_array, opt.samp_freq,
-                                           nperseg=int(opt.num_channel_samples / 1),
-                                           noverlap=int(opt.num_channel_samples / 1) - 1
+                    _, xrec = signal.istft(img_array, opt.sample_freq,
+                                           nperseg=int(opt.sample_length / 1),
+                                           noverlap=int(opt.sample_length / 1) - 1
                                            )
 
                 elif opt.spectral_type == "cwt":
                     sj = np.loadtxt('%s/sj_values.csv' % d, delimiter=',')
-                    xrec = pycwt.icwt(img_array, sj, 1 / opt.samp_freq,
+                    xrec = pycwt.icwt(img_array, sj, 1 / opt.sample_freq,
                                       dj=1/32,
                                       wavelet=pycwt.Morlet(100)
                                       )

@@ -16,10 +16,10 @@ if __name__ == '__main__':
     # signal params
     parser.add_argument('--data_col_start_index',
                         help='number of columns in dataset that are not part of the emg signal', type=int, default=3)
-    parser.add_argument('--num_channel_samples', type=int, help='number of samples per channel', default=200)
+    parser.add_argument('--sample_length', type=int, help='number of samples per channel', default=200)
     parser.add_argument('--num_of_channels', help='number of channels', type=int, default=8)
     parser.add_argument('--channel_skip_count', help='fraction of channels to use', type=int, default=1)
-    parser.add_argument('--samp_freq', help='number of channels', type=int, default=1000)
+    parser.add_argument('--sample_freq', help='number of channels', type=int, default=1000)
     parser.add_argument('--spectral_type', help='number of channels', default='stft')
 
     # SinGAN parameters
