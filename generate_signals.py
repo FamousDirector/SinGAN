@@ -22,6 +22,9 @@ if __name__ == '__main__':
     parser.add_argument('--num_of_channels', help='number of channels', type=int, default=8)
     parser.add_argument('--channel_skip_count', help='fraction of channels to use', type=int, default=1)
     parser.add_argument('--sample_freq', help='number of channels', type=int, default=1000)
+    parser.add_argument('--sample_offset',
+                        help='discrete starting sample point for window, only used in this function to match dirs',
+                        type=int, default=0)
     parser.add_argument('--spectral_type', help='number of channels', default='stft')
 
     # SinGAN parameters
